@@ -1,0 +1,53 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion project.ext.compileSdkVersion
+    buildToolsVersion project.ext.buildToolsVersion
+
+    defaultConfig {
+        applicationId "com.tcorner.appbrella.app"
+
+        minSdkVersion project.ext.minSdkVersion
+        targetSdkVersion project.ext.targetSdkVersion
+
+        versionCode project.ext.versionCode
+        versionName project.ext.versionName
+    }
+
+    buildTypes {
+       release {
+           minifyEnabled false
+           proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+       }
+    }
+
+}
+
+dependencies {
+    implementation project(':main')
+    implementation project(':base')
+
+    implementation "com.android.support:appcompat-v7:$project.ext.supportLibraryVersion"
+    implementation "com.android.support:design:$project.ext.supportLibraryVersion"
+    implementation "com.android.support:recyclerview-v7:$project.ext.supportLibraryVersion"
+    implementation "com.android.support:cardview-v7:$project.ext.supportLibraryVersion"
+    implementation "com.android.support:support-annotations:$project.ext.supportLibraryVersion"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    /* dagger */
+    implementation "com.google.dagger:dagger:$project.ext.daggerVersion"
+    compileOnly "org.glassfish:javax.annotation:$project.ext.annotationVersion"
+    kapt "com.google.dagger:dagger-compiler:$project.ext.daggerVersion"
+
+    /* rxjava */
+    implementation "io.reactivex.rxjava2:rxjava:$project.ext.rxJavaVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$project.ext.rxAndroidVersion"
+
+    testImplementation "junit:junit:$project.ext.jUnitVersion"
+    androidTestImplementation "com.android.support.test:runner:$project.ext.androidTestVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$project.ext.espressoVersion"
+}
