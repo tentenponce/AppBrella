@@ -38,6 +38,8 @@ allprojects {
 
         rxJavaVersion = '2.1.10'
         rxAndroidVersion = '2.0.2'
+        okhttpVersion = '3.11.0'
+        jsoupVersion = '1.11.2'
 
         daggerVersion = '2.5'
         annotationVersion = '10.0-b28'
@@ -49,6 +51,8 @@ allprojects {
         javaxInjectVersion = '1'
 
         gsonVersion = '2.8.2'
+
+        mockitoVersion = '2.7.17'
 
         versionCode = generateVersionCode()
         versionName = generateVersionName()

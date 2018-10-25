@@ -48,6 +48,8 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:$project.ext.rxJavaVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$project.ext.rxAndroidVersion"
 
+    implementation "com.squareup.okhttp3:okhttp:$project.ext.okhttpVersion"
+
     testImplementation "junit:junit:$project.ext.jUnitVersion"
     androidTestImplementation "com.android.support.test:runner:$project.ext.androidTestVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$project.ext.espressoVersion"

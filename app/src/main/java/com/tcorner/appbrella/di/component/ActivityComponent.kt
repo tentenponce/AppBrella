@@ -10,5 +10,4 @@ import dagger.Subcomponent
  */
 @PerActivity
 @Subcomponent(modules = [(ActivityModule::class)])
-interface ActivityComponent {
-}
+interface ActivityComponent
