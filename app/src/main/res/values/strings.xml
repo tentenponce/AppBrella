@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Appbrella</string>
+
+    <!-- generic -->
+    <string name="loading_1">Checking clouds…</string>
+    <string name="loading_2">Communicating to the sky…</string>
+    <string name="loading_3">Calling heavenly bodies…</string>
+    <string name="loading_4">Flying to hydrosphere…</string>
+    <string name="loading_5">Touching fogs…</string>
+    <string name="rain_chance">Rain Chance: %s%%</string>
+    <string name="touch_to_refresh">Touch Anywhere to Refresh</string>
+
+    <!-- umbrella messages -->
+    <string name="no_chance_rain">Iwan mo na payong mo, pabigat lang yan ;)</string>
+    <string name="low_chance_rain">Baka umambon, pero pwede mong daanin sa takbo :)</string>
+    <string name="medium_chance_rain">Mas magandang mag dala ka na, mahirap na ang mabasa.</string>
+    <string name="high_chance_rain">Dalin mo na payong mo kung ako sayo!</string>
 </resources>

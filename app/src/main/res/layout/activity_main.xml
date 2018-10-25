@@ -1,16 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/const_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/tv_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/grid_1"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/text_title"
+        app:layout_constraintBottom_toTopOf="@+id/iv_umbrella_on" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/iv_umbrella_on"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:src="@drawable/umbrella_open"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/iv_umbrella_off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/umbrella_close"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_umbrella_on"
+        app:layout_constraintLeft_toLeftOf="@+id/iv_umbrella_on"
+        app:layout_constraintRight_toRightOf="@+id/iv_umbrella_on"
+        app:layout_constraintTop_toTopOf="@+id/iv_umbrella_on" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/tv_sub_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_1"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_small"
+        app:layout_constraintTop_toBottomOf="@+id/iv_umbrella_on" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/touch_to_refresh"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </android.support.constraint.ConstraintLayout>

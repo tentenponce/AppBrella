@@ -7,4 +7,8 @@ interface MainMvpView : MvpView {
     fun getPrecipitationError(e: Throwable?)
 
     fun showPrecipitation(precipitation: Int?)
+
+    fun showLoading()
+
+    fun hideLoading()
 }
