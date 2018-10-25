@@ -2,6 +2,7 @@ package com.tcorner.appbrella.di.component
 
 import com.tcorner.appbrella.di.PerActivity
 import com.tcorner.appbrella.di.module.ActivityModule
+import com.tcorner.appbrella.ui.main.MainActivity
 import dagger.Subcomponent
 
 /**
@@ -10,4 +11,7 @@ import dagger.Subcomponent
  */
 @PerActivity
 @Subcomponent(modules = [(ActivityModule::class)])
-interface ActivityComponent
+interface ActivityComponent {
+
+    fun inject(mainActivity: MainActivity)
+}

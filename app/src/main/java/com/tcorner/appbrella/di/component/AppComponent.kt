@@ -10,6 +10,7 @@ import com.tcorner.appbrella.domain.common.executor.PostExecutionThread
 import com.tcorner.appbrella.domain.common.executor.ThreadExecutor
 import com.tcorner.appbrella.domain.repository.DeviceRepository
 import com.tcorner.appbrella.domain.repository.LocationRepository
+import com.tcorner.appbrella.domain.repository.WeatherRepository
 import dagger.Component
 import javax.inject.Singleton
 
@@ -20,10 +21,10 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-        modules = [
-            AppModule::class,
-            DataModule::class,
-            DomainModule::class]
+    modules = [
+        AppModule::class,
+        DataModule::class,
+        DomainModule::class]
 )
 interface AppComponent {
 
@@ -39,4 +40,6 @@ interface AppComponent {
     fun deviceRepository(): DeviceRepository
 
     fun locationRepository(): LocationRepository
+
+    fun weatherRepository(): WeatherRepository
 }

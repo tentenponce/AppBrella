@@ -4,12 +4,15 @@ import android.content.Context
 import com.tcorner.appbrella.data.common.executor.JobExecutor
 import com.tcorner.appbrella.data.impl.DeviceRepositoryImpl
 import com.tcorner.appbrella.data.impl.LocationRepositoryImpl
+import com.tcorner.appbrella.data.impl.WeatherRepositoryImpl
 import com.tcorner.appbrella.data.service.LocationService
+import com.tcorner.appbrella.data.service.WeatherService
 import com.tcorner.appbrella.di.AppContext
 import com.tcorner.appbrella.domain.common.executor.PostExecutionThread
 import com.tcorner.appbrella.domain.common.executor.ThreadExecutor
 import com.tcorner.appbrella.domain.repository.DeviceRepository
 import com.tcorner.appbrella.domain.repository.LocationRepository
+import com.tcorner.appbrella.domain.repository.WeatherRepository
 import com.tcorner.appbrella.util.provider.ThreadProvider
 import dagger.Module
 import dagger.Provides
@@ -47,5 +50,11 @@ class DomainModule {
     @Singleton
     internal fun locationRepository(locationService: LocationService): LocationRepository {
         return LocationRepositoryImpl(locationService)
+    }
+
+    @Provides
+    @Singleton
+    internal fun weatherRepository(weatherService: WeatherService): WeatherRepository {
+        return WeatherRepositoryImpl(weatherService)
     }
 }

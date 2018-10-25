@@ -7,9 +7,9 @@ import javax.inject.Inject
 
 class WeatherService @Inject constructor() {
 
-    fun getPrecipitation(longitude: Double, latitude: Double): Observable<Int> {
-        return Observable.fromCallable {
-            val document = Jsoup.connect("https://weather.com/weather/today/l/${longitude},${latitude}").get()
+    fun getPrecipitation(longitude: Double, latitude: Double): Observable<Int> =
+        Observable.fromCallable {
+            val document = Jsoup.connect("https://weather.com/weather/today/l/${latitude},${longitude}").get()
 
             val precipitationValues = document.getElementsByAttributeValueContaining("class", "precip-val")
 
@@ -21,5 +21,4 @@ class WeatherService @Inject constructor() {
                 throw WeatherConnectionException()
             }
         }
-    }
 }
