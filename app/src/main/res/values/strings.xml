@@ -1,18 +1,22 @@
 <resources>
-    <string name="app_name">Appbrella</string>
+    <string name="app_name" translatable="false">Appbrella</string>
 
     <!-- generic -->
-    <string name="loading_1">Checking clouds…</string>
-    <string name="loading_2">Communicating to the sky…</string>
-    <string name="loading_3">Calling heavenly bodies…</string>
-    <string name="loading_4">Flying to hydrosphere…</string>
-    <string name="loading_5">Touching fogs…</string>
-    <string name="rain_chance">Rain Chance: %s%%</string>
-    <string name="touch_to_refresh">Touch Anywhere to Refresh</string>
+    <string name="loading_1" translatable="false">Checking clouds…</string>
+    <string name="loading_2" translatable="false">Communicating to the sky…</string>
+    <string name="loading_3" translatable="false">Calling heavenly bodies…</string>
+    <string name="loading_4" translatable="false">Flying to hydrosphere…</string>
+    <string name="loading_5" translatable="false">Touching fogs…</string>
+    <string name="rain_chance" translatable="false">Rain Chance: %s%%</string>
+    <string name="touch_to_refresh" translatable="false">Touch Anywhere to Refresh</string>
 
     <!-- umbrella messages -->
     <string name="no_chance_rain">Iwan mo na payong mo, pabigat lang yan ;)</string>
     <string name="low_chance_rain">Baka umambon, pero pwede mong daanin sa takbo :)</string>
     <string name="medium_chance_rain">Mas magandang mag dala ka na, mahirap na ang mabasa.</string>
     <string name="high_chance_rain">Dalin mo na payong mo kung ako sayo!</string>
+
+    <!-- error messages -->
+    <string name="error_network" translatable="false">We\'ve encountered fogs upon reaching the status of clouds.</string>
+    <string name="error_generic" translatable="false">We\'ve crashed on to airplane upon checking the clouds: %s</string>
 </resources>

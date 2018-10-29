@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- umbrella messages -->
+    <string name="no_chance_rain">You can safely leave your umbrella at home ;)</string>
+    <string name="low_chance_rain">There might be a light rain or drizzle, but you can still manage to run on it :)</string>
+    <string name="medium_chance_rain">It might be wise to bring an umbrella, getting wet on rain might be worse.</string>
+    <string name="high_chance_rain">Bring your umbrella!</string>
+</resources>

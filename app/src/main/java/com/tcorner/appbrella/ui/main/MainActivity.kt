@@ -4,7 +4,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.ActivityCompat
-import android.util.Log
 import com.tcorner.appbrella.R
 import com.tcorner.appbrella.ui.base.BaseActivity
 import com.tcorner.appbrella.util.AnimateUtil
@@ -100,13 +99,13 @@ class MainActivity : BaseActivity(),
     }
 
     override fun getPrecipitationError(e: Throwable?) {
-        Log.e("androidruntime", "e?.javaClass?.simpleName: ${e?.javaClass?.simpleName}")
-        Log.e("androidruntime", "e?.message: ${e?.message}")
-
         if (e is SecurityException) {
             requestPermission()
         } else if (e is HttpStatusException) {
-            Log.e("androidruntime", "e?.status: ${e.statusCode}")
+            tv_message.setText(R.string.error_network)
+        } else {
+            tv_message.text = String.format(getString(R.string.error_generic, e?.javaClass?.simpleName
+                    ?: e?.message ?: "Unknown"))
         }
     }
 
