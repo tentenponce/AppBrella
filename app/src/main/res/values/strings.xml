@@ -11,10 +11,10 @@
     <string name="touch_to_refresh" translatable="false">Touch Anywhere to Refresh</string>
 
     <!-- umbrella messages -->
-    <string name="no_chance_rain">Iwan mo na payong mo, pabigat lang yan ;)</string>
-    <string name="low_chance_rain">Baka umambon, pero pwede mong daanin sa takbo :)</string>
-    <string name="medium_chance_rain">Mas magandang mag dala ka na, mahirap na ang mabasa.</string>
-    <string name="high_chance_rain">Dalin mo na payong mo kung ako sayo!</string>
+    <string name="no_chance_rain">You can safely leave your umbrella at home ;)</string>
+    <string name="low_chance_rain">There might be a light rain or drizzle, but you can still manage to run on it :)</string>
+    <string name="medium_chance_rain">It might be wise to bring an umbrella, getting wet on rain might be worse.</string>
+    <string name="high_chance_rain">Bring your umbrella!</string>
 
     <!-- error messages -->
     <string name="error_network" translatable="false">We\'ve encountered fogs upon reaching the status of clouds.</string>

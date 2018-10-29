@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- umbrella messages -->
     <string name="no_chance_rain">Iwan mo na payong mo, pabigat lang yan ;)</string>
     <string name="low_chance_rain">Baka umambon, pero pwede mong daanin sa takbo :)</string>
     <string name="medium_chance_rain">Mas magandang mag dala ka na, mahirap na ang mabasa.</string>
