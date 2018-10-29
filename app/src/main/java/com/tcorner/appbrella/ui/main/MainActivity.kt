@@ -21,7 +21,8 @@ class MainActivity : BaseActivity(),
 
     companion object {
         private const val REQUEST_PERMISSION = 1
-        private const val LOADING_TEXT_SWITCH_TIMER = 700L
+        private const val LOADING_TEXT_SWITCH_TIMER = 1500L
+        private const val LOADING_IMAGE_TIMER = 700L
         private val PERMISSIONS = arrayOf(
                 android.Manifest.permission.ACCESS_FINE_LOCATION,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -32,10 +33,14 @@ class MainActivity : BaseActivity(),
     @Inject
     lateinit var mPresenter: MainPresenter
 
-    private var isLoading: Boolean = false // to check if still loading to continue the loading loop
-    private var loadingHandler: Handler = Handler()
-    private lateinit var loadingRunnable: Runnable // handle loading text animation loop
-    private var isOpen: Boolean = false // for animation
+    private var mIsLoading: Boolean = false // to check if still loading to continue the loading loop
+    private var mLoadingHandler: Handler = Handler()
+    private lateinit var mLoadingTextRunnable: Runnable // handle loading text animation loop
+    private lateinit var mLoadingImageRunnable: Runnable // handle loading text animation loop
+
+    private var mIsOpen: Boolean = false // for animation
+
+    private var mPreviousLoadingMessage: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,19 +59,22 @@ class MainActivity : BaseActivity(),
     }
 
     override fun hideLoading() {
-        loadingHandler.removeCallbacks(loadingRunnable)
-        isLoading = false
+        mLoadingHandler.removeCallbacks(mLoadingTextRunnable)
+        mLoadingHandler.removeCallbacks(mLoadingImageRunnable)
+        mIsLoading = false
     }
 
     override fun showLoading() {
-        if (!isLoading) {
-            isOpen = !isOpen
-            AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, isOpen)
+        if (!mIsLoading) {
+            mIsOpen = !mIsOpen
+            AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, mIsOpen)
+            tv_message.text = getNoRepeatRandomLoadingMessage()
 
-            loadingHandler.postDelayed(loadingRunnable, LOADING_TEXT_SWITCH_TIMER)
+            mLoadingHandler.postDelayed(mLoadingTextRunnable, LOADING_TEXT_SWITCH_TIMER)
+            mLoadingHandler.postDelayed(mLoadingImageRunnable, LOADING_IMAGE_TIMER)
         }
 
-        isLoading = true
+        mIsLoading = true
 
         tv_sub_message.text = ""
     }
@@ -76,22 +84,22 @@ class MainActivity : BaseActivity(),
             in 0..15 -> {
                 tv_message.setText(R.string.no_chance_rain)
                 AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, false)
-                isOpen = false
+                mIsOpen = false
             }
             in 16..35 -> {
                 tv_message.setText(R.string.low_chance_rain)
                 AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, false)
-                isOpen = false
+                mIsOpen = false
             }
             in 36..70 -> {
                 tv_message.setText(R.string.medium_chance_rain)
                 AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, true)
-                isOpen = true
+                mIsOpen = true
             }
             in 70..100 -> {
                 tv_message.setText(R.string.high_chance_rain)
                 AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, true)
-                isOpen = true
+                mIsOpen = true
             }
         }
 
@@ -123,22 +131,20 @@ class MainActivity : BaseActivity(),
     }
 
     private fun init() {
-        loadingRunnable = Runnable {
-            isOpen = !isOpen
-            AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, isOpen)
+        mLoadingTextRunnable = Runnable {
+            tv_message.setText(getNoRepeatRandomLoadingMessage())
 
-            val loadingTextId = (1..5).random()
-
-            when (loadingTextId) {
-                1 -> tv_message.setText(R.string.loading_1)
-                2 -> tv_message.setText(R.string.loading_2)
-                3 -> tv_message.setText(R.string.loading_3)
-                4 -> tv_message.setText(R.string.loading_4)
-                5 -> tv_message.setText(R.string.loading_5)
+            if (mIsLoading) {
+                mLoadingHandler.postDelayed(mLoadingTextRunnable, LOADING_TEXT_SWITCH_TIMER)
             }
+        }
 
-            if (isLoading) {
-                loadingHandler.postDelayed(loadingRunnable, LOADING_TEXT_SWITCH_TIMER)
+        mLoadingImageRunnable = Runnable {
+            mIsOpen = !mIsOpen
+            AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, mIsOpen)
+
+            if (mIsLoading) {
+                mLoadingHandler.postDelayed(mLoadingImageRunnable, LOADING_IMAGE_TIMER)
             }
         }
     }
@@ -161,5 +167,31 @@ class MainActivity : BaseActivity(),
 
     private fun requestPermission() {
         ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION)
+    }
+
+    private fun getNoRepeatRandomLoadingMessage(): String {
+        var loadingMessage = getRandomLoadingMessage()
+
+        while (loadingMessage == mPreviousLoadingMessage) {
+            loadingMessage = getRandomLoadingMessage()
+        }
+
+        mPreviousLoadingMessage = loadingMessage
+
+        return loadingMessage
+    }
+
+    private fun getRandomLoadingMessage(): String {
+        var loadingMessage = ""
+
+        when ((1..5).random()) {
+            1 -> loadingMessage = getString(R.string.loading_1)
+            2 -> loadingMessage = getString(R.string.loading_2)
+            3 -> loadingMessage = getString(R.string.loading_3)
+            4 -> loadingMessage = getString(R.string.loading_4)
+            5 -> loadingMessage = getString(R.string.loading_5)
+        }
+
+        return loadingMessage
     }
 }
