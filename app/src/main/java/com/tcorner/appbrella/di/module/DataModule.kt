@@ -20,7 +20,7 @@ class DataModule {
 
     @Provides
     @Singleton
-    internal fun provideAppianHttpClient(): OkHttpClient {
+    internal fun provideHttpClient(): OkHttpClient {
         val builder = SslClientFactory.okHttpClientBuilder
             .connectTimeout(30L, TimeUnit.SECONDS)
             .readTimeout(60L, TimeUnit.SECONDS)
