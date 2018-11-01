@@ -39,6 +39,8 @@ dependencies {
     implementation "com.android.support:support-annotations:$project.ext.supportLibraryVersion"
     implementation "com.android.support.constraint:constraint-layout:$project.ext.constraintLayoutVersion"
 
+    implementation "com.android.billingclient:billing:$project.ext.billingVersion"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     /* dagger */
