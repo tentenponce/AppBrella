@@ -5,15 +5,24 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.ActivityCompat
 import android.widget.Toast
-import com.android.billingclient.api.*
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchasesUpdatedListener
 import com.tcorner.appbrella.R
 import com.tcorner.appbrella.ui.base.BaseActivity
 import com.tcorner.appbrella.util.AnimateUtil
+import com.tcorner.appbrella.util.mapper.PurchaseMapper
 import com.tcorner.appbrella.util.random
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.const_main
+import kotlinx.android.synthetic.main.activity_main.iv_donate
+import kotlinx.android.synthetic.main.activity_main.iv_umbrella_off
+import kotlinx.android.synthetic.main.activity_main.iv_umbrella_on
+import kotlinx.android.synthetic.main.activity_main.tv_message
+import kotlinx.android.synthetic.main.activity_main.tv_sub_message
 import org.jsoup.HttpStatusException
 import javax.inject.Inject
-
 
 class MainActivity : BaseActivity(),
     MainMvpView,
@@ -132,11 +141,7 @@ class MainActivity : BaseActivity(),
     }
 
     override fun successPurchase() {
-        Toast.makeText(
-            this,
-            "Success donating to clouds",
-            Toast.LENGTH_LONG
-        ).show()
+        //TODO list successful purchases
     }
 
     /**
@@ -144,13 +149,7 @@ class MainActivity : BaseActivity(),
      */
     override fun onPurchasesUpdated(responseCode: Int, purchases: MutableList<Purchase>?) {
         if (responseCode == BillingClient.BillingResponse.OK && purchases != null) {
-            val purchaseTokens: MutableList<String> = mutableListOf()
-
-            for (purchase in purchases) {
-                purchaseTokens.add(purchase.purchaseToken)
-            }
-
-            mPresenter.consumePurchases(purchaseTokens)
+            mPresenter.consumePurchases(PurchaseMapper.toPurchaseProducts(purchases))
         } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
             // do nothing when purchase is cancelled
         } else if (responseCode == BillingClient.BillingResponse.FEATURE_NOT_SUPPORTED) {
@@ -205,9 +204,9 @@ class MainActivity : BaseActivity(),
                 override fun onBillingSetupFinished(responseCode: Int) {
                     mBillingClient.launchBillingFlow(
                         this@MainActivity, BillingFlowParams.newBuilder()
-                            .setSku("donation_low")
-                            .setType(BillingClient.SkuType.INAPP)
-                            .build()
+                        .setSku("donation_low")
+                        .setType(BillingClient.SkuType.INAPP)
+                        .build()
                     )
                 }
             })

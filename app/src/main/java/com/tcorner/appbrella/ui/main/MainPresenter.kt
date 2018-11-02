@@ -2,6 +2,7 @@ package com.tcorner.appbrella.ui.main
 
 import com.tcorner.appbrella.domain.interactor.ConsumeDonation
 import com.tcorner.appbrella.domain.interactor.GetPrecipitationPercentage
+import com.tcorner.appbrella.domain.model.PurchaseProduct
 import com.tcorner.appbrella.ui.base.BasePresenter
 import io.reactivex.rxkotlin.subscribeBy
 import javax.inject.Inject
@@ -27,8 +28,8 @@ class MainPresenter @Inject constructor(
             })
     }
 
-    fun consumePurchases(purchaseTokens: MutableList<String>) {
-        mConsumeDonation.execute(purchaseTokens)
+    fun consumePurchases(purchaseProductTokens: List<PurchaseProduct>) {
+        mConsumeDonation.execute(purchaseProductTokens)
             .subscribeBy(onComplete = {
                 mvpView?.successPurchase()
             }, onError = {
