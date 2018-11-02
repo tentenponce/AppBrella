@@ -1,5 +1,6 @@
 package com.tcorner.appbrella.ui.main
 
+import com.tcorner.appbrella.domain.model.PurchaseProduct
 import com.tcorner.appbrella.ui.base.MvpView
 
 interface MainMvpView : MvpView {
@@ -12,7 +13,7 @@ interface MainMvpView : MvpView {
 
     fun hideLoading()
 
-    fun successPurchase()
+    fun successPurchase(purchaseProducts: List<PurchaseProduct>)
 
     fun errorPurchase(e: Throwable)
 }

@@ -28,10 +28,10 @@ class MainPresenter @Inject constructor(
             })
     }
 
-    fun consumePurchases(purchaseProductTokens: List<PurchaseProduct>) {
-        mConsumeDonation.execute(purchaseProductTokens)
+    fun consumePurchases(purchaseProducts: List<PurchaseProduct>) {
+        mConsumeDonation.execute(purchaseProducts)
             .subscribeBy(onComplete = {
-                mvpView?.successPurchase()
+                mvpView?.successPurchase(purchaseProducts)
             }, onError = {
                 mvpView?.errorPurchase(it)
             })

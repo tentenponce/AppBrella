@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.ActivityCompat
+import android.support.v7.app.AlertDialog
 import android.widget.Toast
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
@@ -11,6 +12,7 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.tcorner.appbrella.R
+import com.tcorner.appbrella.domain.model.PurchaseProduct
 import com.tcorner.appbrella.ui.base.BaseActivity
 import com.tcorner.appbrella.util.AnimateUtil
 import com.tcorner.appbrella.util.mapper.PurchaseMapper
@@ -140,8 +142,18 @@ class MainActivity : BaseActivity(),
         ).show()
     }
 
-    override fun successPurchase() {
-        //TODO list successful purchases
+    override fun successPurchase(purchaseProducts: List<PurchaseProduct>) {
+        var purchaseItem = ""
+
+        for (purchaseProduct in purchaseProducts) {
+            purchaseItem = purchaseProduct.name
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.success)
+            .setMessage(getString(R.string.success_donation, purchaseItem))
+            .create()
+            .show()
     }
 
     /**
@@ -150,13 +162,22 @@ class MainActivity : BaseActivity(),
     override fun onPurchasesUpdated(responseCode: Int, purchases: MutableList<Purchase>?) {
         if (responseCode == BillingClient.BillingResponse.OK && purchases != null) {
             mPresenter.consumePurchases(PurchaseMapper.toPurchaseProducts(purchases))
-        } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
-            // do nothing when purchase is cancelled
         } else if (responseCode == BillingClient.BillingResponse.FEATURE_NOT_SUPPORTED) {
             Toast.makeText(this, R.string.error_donation_feature, Toast.LENGTH_LONG).show()
+        } else if (responseCode == BillingClient.BillingResponse.SERVICE_DISCONNECTED ||
+            responseCode == BillingClient.BillingResponse.SERVICE_UNAVAILABLE ||
+            responseCode == BillingClient.BillingResponse.ERROR) {
+            Toast.makeText(this, R.string.error_donation_service, Toast.LENGTH_LONG).show()
+//        } else if (responseCode == BillingClient.BillingResponse.BILLING_UNAVAILABLE) {
+            // api version surely support this
+//        } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
+            // do nothing when purchase is cancelled
+//        } else if (responseCode == BillingClient.BillingResponse.ITEM_ALREADY_OWNED) {
+            // this won't happen as we are consuming if item already owned
+//        } else if (responseCode == BillingClient.BillingResponse.ITEM_NOT_OWNED) {
+            // this won't happen as we are purchasing before consuming
         } else {
-            //TODO
-            Toast.makeText(this, "TODO handling error: $responseCode", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.error_generic, responseCode.toString()), Toast.LENGTH_LONG).show()
         }
     }
 

@@ -16,7 +16,8 @@ class PurchaseMapper {
 
             if (purchases != null) {
                 for (purchase in purchases) {
-                    purchaseItems.add(PurchaseProduct(purchaseToken = purchase.purchaseToken))
+                    purchaseItems.add(PurchaseProduct(purchaseToken = purchase.purchaseToken,
+                        name = purchase.packageName))
                 }
             }
 
