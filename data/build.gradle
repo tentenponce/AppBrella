@@ -27,4 +27,6 @@ dependencies {
     implementation "org.jsoup:jsoup:$project.ext.jsoupVersion"
 
     testImplementation "junit:junit:$project.ext.jUnitVersion"
+
+    implementation "com.android.billingclient:billing:$project.ext.billingVersion"
 }

@@ -19,4 +19,6 @@
     <!-- error messages -->
     <string name="error_network" translatable="false">We\'ve encountered fogs upon reaching the status of clouds.</string>
     <string name="error_generic" translatable="false">We\'ve crashed on to airplane upon checking the clouds: %s</string>
+    <string name="error_donation" translatable="false">Sorry, we\'ve encountered problem upon donating to the clouds: %s</string>
+    <string name="error_donation_feature" translatable="false">Uh Oh, we\re still working on to support donation on your device.</string>
 </resources>

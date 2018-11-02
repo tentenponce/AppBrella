@@ -4,11 +4,15 @@ import com.tcorner.appbrella.ui.base.MvpView
 
 interface MainMvpView : MvpView {
 
-    fun getPrecipitationError(e: Throwable?)
+    fun getPrecipitationError(e: Throwable)
 
     fun showPrecipitation(precipitation: Int?)
 
     fun showLoading()
 
     fun hideLoading()
+
+    fun successPurchase()
+
+    fun errorPurchase(e: Throwable)
 }

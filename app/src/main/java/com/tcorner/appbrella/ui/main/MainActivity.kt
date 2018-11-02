@@ -4,44 +4,49 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.ActivityCompat
+import android.widget.Toast
+import com.android.billingclient.api.*
 import com.tcorner.appbrella.R
 import com.tcorner.appbrella.ui.base.BaseActivity
 import com.tcorner.appbrella.util.AnimateUtil
 import com.tcorner.appbrella.util.random
-import kotlinx.android.synthetic.main.activity_main.const_main
-import kotlinx.android.synthetic.main.activity_main.iv_umbrella_off
-import kotlinx.android.synthetic.main.activity_main.iv_umbrella_on
-import kotlinx.android.synthetic.main.activity_main.tv_message
-import kotlinx.android.synthetic.main.activity_main.tv_sub_message
+import kotlinx.android.synthetic.main.activity_main.*
 import org.jsoup.HttpStatusException
 import javax.inject.Inject
 
-class MainActivity : BaseActivity(),
-        MainMvpView {
 
+class MainActivity : BaseActivity(),
+    MainMvpView,
+    PurchasesUpdatedListener {
     companion object {
+
         private const val REQUEST_PERMISSION = 1
+
         private const val LOADING_TEXT_SWITCH_TIMER = 1500L
+
         private const val LOADING_IMAGE_TIMER = 700L
         private val PERMISSIONS = arrayOf(
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                android.Manifest.permission.INTERNET
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+            android.Manifest.permission.INTERNET
         )
     }
 
     @Inject
     lateinit var mPresenter: MainPresenter
 
+    @Inject
+    lateinit var mBillingClient: BillingClient
+
     private var mIsLoading: Boolean = false // to check if still loading to continue the loading loop
+
     private var mLoadingHandler: Handler = Handler()
+
     private lateinit var mLoadingTextRunnable: Runnable // handle loading text animation loop
+
     private lateinit var mLoadingImageRunnable: Runnable // handle loading text animation loop
-
     private var mIsOpen: Boolean = false // for animation
-
     private var mPreviousLoadingMessage: String = ""
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -106,23 +111,60 @@ class MainActivity : BaseActivity(),
         tv_sub_message.text = String.format(getString(R.string.rain_chance), precipitation.toString())
     }
 
-    override fun getPrecipitationError(e: Throwable?) {
-        if (e is SecurityException) {
-            requestPermission()
-        } else if (e is HttpStatusException) {
-            tv_message.setText(R.string.error_network)
+    override fun getPrecipitationError(e: Throwable) {
+        when (e) {
+            is SecurityException -> requestPermission()
+            is HttpStatusException -> tv_message.setText(R.string.error_network)
+            else -> tv_message.text = String.format(
+                getString(
+                    R.string.error_generic, e.javaClass.simpleName
+                )
+            )
+        }
+    }
+
+    override fun errorPurchase(e: Throwable) {
+        Toast.makeText(
+            this,
+            String.format(getString(R.string.error_donation), e.javaClass.simpleName),
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    override fun successPurchase() {
+        Toast.makeText(
+            this,
+            "Success donating to clouds",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    /**
+     * Consume the purchased item/s immediately
+     */
+    override fun onPurchasesUpdated(responseCode: Int, purchases: MutableList<Purchase>?) {
+        if (responseCode == BillingClient.BillingResponse.OK && purchases != null) {
+            val purchaseTokens: MutableList<String> = mutableListOf()
+
+            for (purchase in purchases) {
+                purchaseTokens.add(purchase.purchaseToken)
+            }
+
+            mPresenter.consumePurchases(purchaseTokens)
+        } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
+            // do nothing when purchase is cancelled
+        } else if (responseCode == BillingClient.BillingResponse.FEATURE_NOT_SUPPORTED) {
+            Toast.makeText(this, R.string.error_donation_feature, Toast.LENGTH_LONG).show()
         } else {
-            tv_message.text = String.format(getString(R.string.error_generic, e?.javaClass?.simpleName
-                    ?: e?.message ?: "Unknown"))
+            //TODO
+            Toast.makeText(this, "TODO handling error: $responseCode", Toast.LENGTH_LONG).show()
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        var index = 0
-        val PermissionsMap = HashMap<String, Int>()
-        for (permission in permissions) {
-            PermissionsMap[permission] = grantResults[index]
-            index++
+        val permissionsMap = HashMap<String, Int>()
+        for ((index, permission) in permissions.withIndex()) {
+            permissionsMap[permission] = grantResults[index]
         }
 
         if (hasPermissions()) {
@@ -132,7 +174,7 @@ class MainActivity : BaseActivity(),
 
     private fun init() {
         mLoadingTextRunnable = Runnable {
-            tv_message.setText(getNoRepeatRandomLoadingMessage())
+            tv_message.text = getNoRepeatRandomLoadingMessage()
 
             if (mIsLoading) {
                 mLoadingHandler.postDelayed(mLoadingTextRunnable, LOADING_TEXT_SWITCH_TIMER)
@@ -152,6 +194,23 @@ class MainActivity : BaseActivity(),
     private fun initViews() {
         const_main.setOnClickListener {
             mPresenter.getPrecipitation()
+        }
+
+        iv_donate.setOnClickListener {
+            mBillingClient.startConnection(object : BillingClientStateListener {
+
+                override fun onBillingServiceDisconnected() {
+                }
+
+                override fun onBillingSetupFinished(responseCode: Int) {
+                    mBillingClient.launchBillingFlow(
+                        this@MainActivity, BillingFlowParams.newBuilder()
+                            .setSku("donation_low")
+                            .setType(BillingClient.SkuType.INAPP)
+                            .build()
+                    )
+                }
+            })
         }
     }
 

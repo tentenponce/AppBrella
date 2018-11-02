@@ -1,6 +1,6 @@
 package com.tcorner.appbrella.data.service
 
-import com.tcorner.appbrella.data.common.exception.WeatherConnectionException
+import com.tcorner.appbrella.domain.common.exception.WeatherConnectionException
 import io.reactivex.Observable
 import org.jsoup.Jsoup
 import javax.inject.Inject
