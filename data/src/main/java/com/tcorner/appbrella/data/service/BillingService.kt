@@ -1,8 +1,10 @@
 package com.tcorner.appbrella.data.service
 
 import android.accounts.NetworkErrorException
-import android.app.Activity
-import com.android.billingclient.api.*
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.SkuDetails
+import com.android.billingclient.api.SkuDetailsParams
 import com.tcorner.appbrella.domain.common.exception.BillingConnectionException
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -13,8 +15,7 @@ import javax.inject.Inject
  * Created by Exequiel Egbert V. Ponce on 11/1/2018.
  */
 class BillingService @Inject constructor(
-    private val mClient: BillingClient,
-    private val mActivity: Activity
+    private val mClient: BillingClient
 ) {
 
     /**
@@ -59,37 +60,20 @@ class BillingService @Inject constructor(
     }
 
     /**
-     * purchase an item and return its info
+     * consume purchased item
      */
-    fun purchaseInApp(sku: String): Single<Purchase> {
-        return Single.create {
+    fun consumeInApp(purchaseToken: String): Completable {
+        return Completable.create {
             mClient.startConnection(object : BillingClientStateListener {
                 override fun onBillingSetupFinished(responseCode: Int) {
-                    val flowParams = BillingFlowParams.newBuilder()
-                        .setSku(sku)
-                        .setType(BillingClient.SkuType.INAPP)
-                        .build()
-
-                    mClient.launchBillingFlow(mActivity, flowParams) // show google pay
-
-                    /* get the purchased item description */
-                    val purchasesResult = mClient.queryPurchases(BillingClient.SkuType.INAPP)
-                    if (purchasesResult.responseCode == BillingClient.BillingResponse.OK) {
-
-                        /* find the purchased item on the list */
-                        for (purchase in purchasesResult.purchasesList) {
-                            if (purchase.sku == sku) {
-                                if (!it.isDisposed) {
-                                    it.onSuccess(purchase)
-                                    mClient.endConnection()
-                                    break
-                                }
+                    mClient.consumeAsync(purchaseToken) { responseCode2, _ ->
+                        if (responseCode2 == BillingClient.BillingResponse.OK) {
+                            it.onComplete()
+                        } else {
+                            if (!it.isDisposed) {
+                                it.onError(BillingConnectionException(responseCode2))
+                                mClient.endConnection()
                             }
-                        }
-                    } else {
-                        if (!it.isDisposed) {
-                            it.onError(BillingConnectionException(purchasesResult.responseCode))
-                            mClient.endConnection()
                         }
                     }
                 }
@@ -100,24 +84,6 @@ class BillingService @Inject constructor(
                     }
                 }
             })
-        }
-    }
-
-    /**
-     * consume purchased item
-     */
-    fun consumePurchaseInApp(purchaseToken: String): Completable {
-        return Completable.create {
-            mClient.consumeAsync(purchaseToken) { responseCode, outToken ->
-                if (responseCode == BillingClient.BillingResponse.OK) {
-                    it.onComplete()
-                } else {
-                    if (!it.isDisposed) {
-                        it.onError(BillingConnectionException(responseCode))
-                        mClient.endConnection()
-                    }
-                }
-            }
         }
     }
 }

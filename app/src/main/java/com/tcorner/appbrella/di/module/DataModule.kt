@@ -1,13 +1,8 @@
 package com.tcorner.appbrella.di.module
 
-import android.app.Activity
 import android.content.Context
-import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.PurchasesUpdatedListener
-import com.tcorner.appbrella.data.service.BillingService
 import com.tcorner.appbrella.data.service.LocationService
 import com.tcorner.appbrella.data.service.WeatherService
-import com.tcorner.appbrella.di.ActivityContext
 import com.tcorner.appbrella.di.AppContext
 import com.tcorner.appbrella.util.factory.SslClientFactory
 import dagger.Module
@@ -44,17 +39,5 @@ class DataModule {
     @Singleton
     internal fun provideWeatherService(): WeatherService {
         return WeatherService()
-    }
-
-    @Provides
-    @Singleton
-    internal fun provideBillingService(@AppContext context: Context, @ActivityContext activity: Activity): BillingService {
-        return BillingService(
-            BillingClient
-                .newBuilder(context)
-                .setListener(activity as PurchasesUpdatedListener)
-                .build(),
-            activity
-        )
     }
 }

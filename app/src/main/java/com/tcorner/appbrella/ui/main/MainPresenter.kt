@@ -1,6 +1,6 @@
 package com.tcorner.appbrella.ui.main
 
-import com.tcorner.appbrella.common.item.PurchaseItem
+import com.tcorner.appbrella.domain.interactor.ConsumeDonation
 import com.tcorner.appbrella.domain.interactor.GetPrecipitationPercentage
 import com.tcorner.appbrella.ui.base.BasePresenter
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -8,7 +8,10 @@ import io.reactivex.rxkotlin.subscribeBy
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class MainPresenter @Inject constructor(val mGetPrecipitationPercentage: GetPrecipitationPercentage) :
+class MainPresenter @Inject constructor(
+    val mGetPrecipitationPercentage: GetPrecipitationPercentage,
+    val mConsumeDonation: ConsumeDonation
+) :
     BasePresenter<MainMvpView>() {
 
     fun getPrecipitation() {
@@ -29,7 +32,12 @@ class MainPresenter @Inject constructor(val mGetPrecipitationPercentage: GetPrec
             )
     }
 
-    fun successPurchase(toPurchaseItems: List<PurchaseItem>) {
-        TODO("consume purchased item")
+    fun consumePurchases(purchaseTokens: MutableList<String>) {
+        mConsumeDonation.execute(purchaseTokens)
+            .subscribeBy(onComplete = {
+                mvpView?.successPurchase()
+            }, onError = {
+                mvpView?.errorPurchase(it)
+            })
     }
 }
