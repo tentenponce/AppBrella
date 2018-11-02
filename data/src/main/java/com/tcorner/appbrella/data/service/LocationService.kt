@@ -16,33 +16,20 @@ class LocationService @Inject constructor(val context: Context) {
         LocationServices.getFusedLocationProviderClient(context)
 
     @SuppressLint("MissingPermission")
-    fun getLongitude(): Single<Double> {
+    fun getLongitudeLatitude(): Single<Pair<Double, Double>> {
         return Single.create {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location: Location? ->
                     if (location != null) {
                         if (!it.isDisposed) {
-                            it.onSuccess(location.longitude)
+                            it.onSuccess(Pair(location.longitude, location.latitude))
                         }
                     } else {
                         it.onError(LocationException("Cannot request location updates"))
                     }
                 }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    fun getLatitude(): Single<Double> {
-        return Single.create {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location: Location? ->
-                    if (location != null) {
-                        if (!it.isDisposed) {
-                            it.onSuccess(location.latitude)
-                        }
-                    } else {
-                        it.onError(LocationException("Cannot request location updates"))
-                    }
+                .addOnFailureListener { exception ->
+                    it.onError(exception)
                 }
         }
     }

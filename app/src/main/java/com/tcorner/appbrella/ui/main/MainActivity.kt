@@ -12,6 +12,7 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.tcorner.appbrella.R
+import com.tcorner.appbrella.domain.common.exception.LocationException
 import com.tcorner.appbrella.domain.model.PurchaseProduct
 import com.tcorner.appbrella.ui.base.BaseActivity
 import com.tcorner.appbrella.util.AnimateUtil
@@ -126,6 +127,7 @@ class MainActivity : BaseActivity(),
         when (e) {
             is SecurityException -> requestPermission()
             is HttpStatusException -> tv_message.setText(R.string.error_network)
+            is LocationException -> tv_message.text = e.message
             else -> tv_message.text = String.format(
                 getString(
                     R.string.error_generic, e.javaClass.simpleName
