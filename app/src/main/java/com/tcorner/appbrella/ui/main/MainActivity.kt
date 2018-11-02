@@ -143,15 +143,10 @@ class MainActivity : BaseActivity(),
     }
 
     override fun successPurchase(purchaseProducts: List<PurchaseProduct>) {
-        var purchaseItem = ""
-
-        for (purchaseProduct in purchaseProducts) {
-            purchaseItem = purchaseProduct.name
-        }
-
         AlertDialog.Builder(this)
             .setTitle(R.string.success)
-            .setMessage(getString(R.string.success_donation, purchaseItem))
+            .setMessage(R.string.success_donation)
+            .setPositiveButton(R.string.yes) { dialog, _ -> dialog.dismiss() }
             .create()
             .show()
     }
