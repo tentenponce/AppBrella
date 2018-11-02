@@ -145,7 +145,7 @@ class MainActivity : BaseActivity(),
     override fun successPurchase(purchaseProducts: List<PurchaseProduct>) {
         AlertDialog.Builder(this)
             .setTitle(R.string.success)
-            .setMessage(R.string.success_donation)
+            .setMessage(R.string.welcome)
             .setPositiveButton(R.string.yes) { dialog, _ -> dialog.dismiss() }
             .create()
             .show()
@@ -165,8 +165,8 @@ class MainActivity : BaseActivity(),
             Toast.makeText(this, R.string.error_donation_service, Toast.LENGTH_LONG).show()
 //        } else if (responseCode == BillingClient.BillingResponse.BILLING_UNAVAILABLE) {
             // api version surely support this
-//        } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
-            // do nothing when purchase is cancelled
+        } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
+//             do nothing when purchase is cancelled
 //        } else if (responseCode == BillingClient.BillingResponse.ITEM_ALREADY_OWNED) {
             // this won't happen as we are consuming if item already owned
 //        } else if (responseCode == BillingClient.BillingResponse.ITEM_NOT_OWNED) {
