@@ -145,8 +145,8 @@ class MainActivity : BaseActivity(),
     override fun successPurchase(purchaseProducts: List<PurchaseProduct>) {
         AlertDialog.Builder(this)
             .setTitle(R.string.success)
-            .setMessage(R.string.welcome)
-            .setPositiveButton(R.string.yes) { dialog, _ -> dialog.dismiss() }
+            .setMessage(R.string.success_donation)
+            .setPositiveButton(R.string.welcome) { dialog, _ -> dialog.dismiss() }
             .create()
             .show()
     }
