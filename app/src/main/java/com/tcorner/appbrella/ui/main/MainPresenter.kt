@@ -3,9 +3,7 @@ package com.tcorner.appbrella.ui.main
 import com.tcorner.appbrella.domain.interactor.ConsumeDonation
 import com.tcorner.appbrella.domain.interactor.GetPrecipitationPercentage
 import com.tcorner.appbrella.ui.base.BasePresenter
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MainPresenter @Inject constructor(
@@ -19,17 +17,14 @@ class MainPresenter @Inject constructor(
 
         mvpView?.showLoading()
         mGetPrecipitationPercentage.execute()
-            .delay(2, TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { compositeDisposable.add(it) }
-            .subscribeBy(onNext = {
+            .subscribeBy(onSuccess = {
                 mvpView?.hideLoading()
                 mvpView?.showPrecipitation(it)
             }, onError = {
                 mvpView?.hideLoading()
                 mvpView?.getPrecipitationError(it)
-            }
-            )
+            })
     }
 
     fun consumePurchases(purchaseTokens: MutableList<String>) {

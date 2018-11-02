@@ -1,11 +1,11 @@
 package com.tcorner.appbrella.domain.interactor
 
-import com.tcorner.appbrella.domain.common.base.ObservableUseCaseNoParam
+import com.tcorner.appbrella.domain.common.base.SingleUseCaseNoParam
 import com.tcorner.appbrella.domain.common.executor.PostExecutionThread
 import com.tcorner.appbrella.domain.common.executor.ThreadExecutor
 import com.tcorner.appbrella.domain.repository.LocationRepository
 import com.tcorner.appbrella.domain.repository.WeatherRepository
-import io.reactivex.Observable
+import io.reactivex.Single
 import javax.inject.Inject
 
 class GetPrecipitationPercentage @Inject constructor(
@@ -14,9 +14,9 @@ class GetPrecipitationPercentage @Inject constructor(
     private val mLocationRepository: LocationRepository,
     private val mWeatherRepository: WeatherRepository
 ) :
-    ObservableUseCaseNoParam<Int>(threadExecutor, postExecutionThread) {
+    SingleUseCaseNoParam<Int>(threadExecutor, postExecutionThread) {
 
-    override fun buildObservable(): Observable<Int> {
+    override fun buildObservable(): Single<Int> {
         return mLocationRepository.getLocation()
             .flatMap { mWeatherRepository.getPrecipitation(it.longitude, it.latitude) }
     }

@@ -1,5 +1,3 @@
 package com.tcorner.appbrella.domain.common.exception
 
-import java.lang.RuntimeException
-
-class WeatherConnectionException : RuntimeException()
+class WeatherConnectionException constructor(url: String) : RuntimeException()

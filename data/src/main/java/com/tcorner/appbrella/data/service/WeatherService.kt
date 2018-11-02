@@ -1,15 +1,17 @@
 package com.tcorner.appbrella.data.service
 
 import com.tcorner.appbrella.domain.common.exception.WeatherConnectionException
-import io.reactivex.Observable
+import io.reactivex.Single
 import org.jsoup.Jsoup
 import javax.inject.Inject
 
 class WeatherService @Inject constructor() {
 
-    fun getPrecipitation(longitude: Double, latitude: Double): Observable<Int> =
-        Observable.fromCallable {
-            val document = Jsoup.connect("https://weather.com/weather/today/l/${latitude},${longitude}").get()
+    fun getPrecipitation(longitude: Double, latitude: Double): Single<Int> =
+        Single.fromCallable {
+            val url = "https://weather.com/weather/today/l/${latitude},${longitude}"
+
+            val document = Jsoup.connect(url).get()
 
             val precipitationValues = document.getElementsByAttributeValueContaining("class", "precip-val")
 
@@ -18,7 +20,7 @@ class WeatherService @Inject constructor() {
             if (percentageString != null) {
                 precipitationValues.first().text().substring(0, percentageString.length - 1).toInt()
             } else {
-                throw WeatherConnectionException()
+                throw WeatherConnectionException(url)
             }
         }
 }
