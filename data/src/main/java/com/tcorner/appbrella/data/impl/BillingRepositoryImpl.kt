@@ -22,7 +22,10 @@ class BillingRepositoryImpl @Inject constructor(val mService: BillingService) : 
         return mService.getSkuList()
             .flattenAsObservable { it }
             .map {
-                Donation(id = it.sku, name = it.title, description = it.description, price = it.price)
+                Donation(id = it.sku,
+                    name = it.title.replace("\\(.*\\)".toRegex(), "").trim(), // trim the app name. eg: "Umbre (AppBrella)" to "Umbre"
+                    description = it.description,
+                    price = it.price)
             }
             .toList()
     }
