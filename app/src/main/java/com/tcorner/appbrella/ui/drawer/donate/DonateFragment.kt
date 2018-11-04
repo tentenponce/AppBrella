@@ -108,7 +108,7 @@ class DonateFragment : BaseFragment(),
         }
 
         /* recycler view */
-        rv_donate.layoutManager = LinearLayoutManager(context) as RecyclerView.LayoutManager?
+        rv_donate.layoutManager = LinearLayoutManager(context)
         rv_donate.adapter = mDonationAdapter
 
         /* swipe refresh layout */
