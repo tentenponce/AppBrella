@@ -109,6 +109,13 @@ class MainFragment : BaseFragment(),
         mPresenter.getPrecipitation()
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        mLoadingHandler.removeCallbacks(mLoadingTextRunnable)
+        mLoadingHandler.removeCallbacks(mLoadingImageRunnable)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         mPresenter.detachView()
