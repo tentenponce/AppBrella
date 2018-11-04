@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -107,7 +108,7 @@ class DonateFragment : BaseFragment(),
         }
 
         /* recycler view */
-        rv_donate.layoutManager = LinearLayoutManager(context)
+        rv_donate.layoutManager = LinearLayoutManager(context) as RecyclerView.LayoutManager?
         rv_donate.adapter = mDonationAdapter
 
         /* swipe refresh layout */
