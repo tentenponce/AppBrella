@@ -1,7 +1,7 @@
 package com.tcorner.appbrella.data.impl
 
 import com.tcorner.appbrella.data.service.BillingService
-import com.tcorner.appbrella.domain.model.Product
+import com.tcorner.appbrella.domain.model.Donation
 import com.tcorner.appbrella.domain.repository.BillingRepository
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -18,10 +18,12 @@ class BillingRepositoryImpl @Inject constructor(val mService: BillingService) : 
         return mService.consumeInApp(purchaseToken)
     }
 
-    override fun getSkuList(): Single<List<Product>> {
+    override fun getSkuList(): Single<List<Donation>> {
         return mService.getSkuList()
             .flattenAsObservable { it }
-            .map { Product(id = it.sku, name = it.title, price = it.price.toDouble()) }
+            .map {
+                Donation(id = it.sku, name = it.title, description = it.description, price = it.price)
+            }
             .toList()
     }
 }

@@ -1,16 +1,12 @@
 package com.tcorner.appbrella.ui.drawer.main
 
-import com.tcorner.appbrella.domain.interactor.ConsumeDonation
 import com.tcorner.appbrella.domain.interactor.GetPrecipitationPercentage
-import com.tcorner.appbrella.domain.model.PurchaseProduct
 import com.tcorner.appbrella.ui.base.BasePresenter
 import io.reactivex.rxkotlin.subscribeBy
 import javax.inject.Inject
 
 class MainPresenter @Inject constructor(
-    val mGetPrecipitationPercentage: GetPrecipitationPercentage,
-    val mConsumeDonation: ConsumeDonation
-) :
+    private val mGetPrecipitationPercentage: GetPrecipitationPercentage) :
     BasePresenter<MainMvpView>() {
 
     fun getPrecipitation() {
@@ -25,15 +21,6 @@ class MainPresenter @Inject constructor(
             }, onError = {
                 mvpView?.hideLoading()
                 mvpView?.getPrecipitationError(it)
-            })
-    }
-
-    fun consumePurchases(purchaseProducts: List<PurchaseProduct>) {
-        mConsumeDonation.execute(purchaseProducts)
-            .subscribeBy(onComplete = {
-                mvpView?.successPurchase(purchaseProducts)
-            }, onError = {
-                mvpView?.errorPurchase(it)
             })
     }
 }

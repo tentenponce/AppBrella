@@ -2,6 +2,7 @@ package com.tcorner.appbrella.di.component
 
 import com.tcorner.appbrella.di.PerFragment
 import com.tcorner.appbrella.di.module.FragmentModule
+import com.tcorner.appbrella.ui.drawer.donate.DonateFragment
 import com.tcorner.appbrella.ui.drawer.main.MainFragment
 import dagger.Subcomponent
 
@@ -14,4 +15,6 @@ import dagger.Subcomponent
 interface FragmentComponent {
 
     fun inject(mainFragment: MainFragment)
+
+    fun inject(donateFragment: DonateFragment)
 }

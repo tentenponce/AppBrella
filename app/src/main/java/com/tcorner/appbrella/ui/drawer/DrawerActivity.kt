@@ -10,6 +10,7 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.tcorner.appbrella.R
 import com.tcorner.appbrella.ui.base.BaseActivity
+import com.tcorner.appbrella.ui.drawer.donate.DonateFragment
 import com.tcorner.appbrella.ui.drawer.main.MainFragment
 import com.tcorner.appbrella.util.helper.FragmentHelper
 import kotlinx.android.synthetic.main.activity_drawer.content_frame
@@ -65,7 +66,11 @@ class DrawerActivity : BaseActivity(),
             R.id.nav_main -> FragmentHelper.setupFragment(this,
                 MainFragment.newInstance(),
                 content_frame,
-                getString(R.string.app_name))
+                getString(R.string.menu_main))
+            R.id.nav_donate -> FragmentHelper.setupFragment(this,
+                DonateFragment.newInstance(),
+                content_frame,
+                getString(R.string.menu_donate))
         }
 
         return true
@@ -92,7 +97,7 @@ class DrawerActivity : BaseActivity(),
     override fun onPurchasesUpdated(responseCode: Int, purchases: MutableList<Purchase>?) {
         val fragment = FragmentHelper.getFragment(this, content_frame)
         if (fragment != null &&
-            fragment is MainFragment) {
+            fragment is DonateFragment) {
 
             /* but we still pass it to the fragment that is responsible for launching the google in-app billing :P */
             fragment.onPurchasesUpdated(responseCode, purchases)

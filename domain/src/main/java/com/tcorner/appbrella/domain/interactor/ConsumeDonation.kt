@@ -3,7 +3,7 @@ package com.tcorner.appbrella.domain.interactor
 import com.tcorner.appbrella.domain.common.base.CompletableUseCase
 import com.tcorner.appbrella.domain.common.executor.PostExecutionThread
 import com.tcorner.appbrella.domain.common.executor.ThreadExecutor
-import com.tcorner.appbrella.domain.model.PurchaseProduct
+import com.tcorner.appbrella.domain.model.PurchaseDonation
 import com.tcorner.appbrella.domain.repository.BillingRepository
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -18,9 +18,9 @@ class ConsumeDonation @Inject constructor(
     threadExecutor: ThreadExecutor,
     postExecutionThread: PostExecutionThread,
     private val mBillingRepository: BillingRepository
-) : CompletableUseCase<List<PurchaseProduct>>(threadExecutor, postExecutionThread) {
+) : CompletableUseCase<List<PurchaseDonation>>(threadExecutor, postExecutionThread) {
 
-    override fun buildObservable(param: List<PurchaseProduct>): Completable {
+    override fun buildObservable(param: List<PurchaseDonation>): Completable {
         return Observable.fromIterable(param)
             .flatMapCompletable { mBillingRepository.consumeInApp(it.purchaseToken) }
     }

@@ -1,6 +1,6 @@
 package com.tcorner.appbrella.domain.repository
 
-import com.tcorner.appbrella.domain.model.Product
+import com.tcorner.appbrella.domain.model.Donation
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -10,7 +10,7 @@ import io.reactivex.Single
  */
 interface BillingRepository {
 
-    fun getSkuList(): Single<List<Product>>
+    fun getSkuList(): Single<List<Donation>>
 
     fun consumeInApp(purchaseToken: String): Completable
 }

@@ -58,6 +58,8 @@ allprojects {
 
         mockitoVersion = '2.7.17'
 
+        fastAdapterVersion = '3.2.8'
+
         versionCode = generateVersionCode()
         versionName = generateVersionName()
     }

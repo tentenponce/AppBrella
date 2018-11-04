@@ -1,7 +1,7 @@
 package com.tcorner.appbrella.util.mapper
 
 import com.android.billingclient.api.Purchase
-import com.tcorner.appbrella.domain.model.PurchaseProduct
+import com.tcorner.appbrella.domain.model.PurchaseDonation
 
 /**
  *
@@ -11,12 +11,12 @@ import com.tcorner.appbrella.domain.model.PurchaseProduct
 class PurchaseMapper {
 
     companion object {
-        fun toPurchaseProducts(purchases: MutableList<Purchase>?): List<PurchaseProduct> {
-            val purchaseItems: ArrayList<PurchaseProduct> = ArrayList()
+        fun toPurchaseProducts(purchases: MutableList<Purchase>?): List<PurchaseDonation> {
+            val purchaseItems: ArrayList<PurchaseDonation> = ArrayList()
 
             if (purchases != null) {
                 for (purchase in purchases) {
-                    purchaseItems.add(PurchaseProduct(purchaseToken = purchase.purchaseToken))
+                    purchaseItems.add(PurchaseDonation(purchaseToken = purchase.purchaseToken))
                 }
             }
 

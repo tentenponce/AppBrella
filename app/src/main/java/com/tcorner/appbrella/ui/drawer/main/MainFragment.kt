@@ -4,24 +4,15 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.ActivityCompat
-import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.BillingClientStateListener
-import com.android.billingclient.api.BillingFlowParams
-import com.android.billingclient.api.Purchase
 import com.tcorner.appbrella.R
 import com.tcorner.appbrella.domain.common.exception.LocationException
-import com.tcorner.appbrella.domain.model.PurchaseProduct
 import com.tcorner.appbrella.ui.base.BaseFragment
 import com.tcorner.appbrella.util.AnimateUtil
-import com.tcorner.appbrella.util.mapper.PurchaseMapper
-import com.tcorner.appbrella.util.random
+import com.tcorner.appbrella.util.LoadingMessageUtil
 import kotlinx.android.synthetic.main.fragment_main.const_main
-import kotlinx.android.synthetic.main.fragment_main.iv_donate
 import kotlinx.android.synthetic.main.fragment_main.iv_umbrella_off
 import kotlinx.android.synthetic.main.fragment_main.iv_umbrella_on
 import kotlinx.android.synthetic.main.fragment_main.tv_message
@@ -58,9 +49,6 @@ class MainFragment : BaseFragment(),
     @Inject
     lateinit var mPresenter: MainPresenter
 
-    @Inject
-    lateinit var mBillingClient: BillingClient
-
     private var mIsLoading: Boolean = false // to check if still loading to continue the loading loop
 
     private var mLoadingHandler: Handler = Handler()
@@ -73,7 +61,7 @@ class MainFragment : BaseFragment(),
     private var mPreviousLoadingMessage: String = ""
 
     override fun title(): String {
-        return getString(R.string.app_name)
+        return getString(R.string.menu_main)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,23 +100,6 @@ class MainFragment : BaseFragment(),
 
         const_main.setOnClickListener {
             mPresenter.getPrecipitation()
-        }
-
-        iv_donate.setOnClickListener {
-            mBillingClient.startConnection(object : BillingClientStateListener {
-
-                override fun onBillingServiceDisconnected() {
-                }
-
-                override fun onBillingSetupFinished(responseCode: Int) {
-                    mBillingClient.launchBillingFlow(
-                        activity, BillingFlowParams.newBuilder()
-                        .setSku("donation_low")
-                        .setType(BillingClient.SkuType.INAPP)
-                        .build()
-                    )
-                }
-            })
         }
     }
 
@@ -204,48 +175,6 @@ class MainFragment : BaseFragment(),
         }
     }
 
-    override fun errorPurchase(e: Throwable) {
-        Toast.makeText(
-            context,
-            String.format(getString(R.string.error_donation), e.javaClass.simpleName),
-            Toast.LENGTH_LONG
-        ).show()
-    }
-
-    override fun successPurchase(purchaseProducts: List<PurchaseProduct>) {
-        AlertDialog.Builder(context!!)
-            .setTitle(R.string.success)
-            .setMessage(R.string.success_donation)
-            .setPositiveButton(R.string.welcome) { dialog, _ -> dialog.dismiss() }
-            .create()
-            .show()
-    }
-
-    /**
-     * Consume the purchased item/s immediately
-     */
-    fun onPurchasesUpdated(responseCode: Int, purchases: MutableList<Purchase>?) {
-        if (responseCode == BillingClient.BillingResponse.OK && purchases != null) {
-            mPresenter.consumePurchases(PurchaseMapper.toPurchaseProducts(purchases))
-        } else if (responseCode == BillingClient.BillingResponse.FEATURE_NOT_SUPPORTED) {
-            Toast.makeText(context, R.string.error_donation_feature, Toast.LENGTH_LONG).show()
-        } else if (responseCode == BillingClient.BillingResponse.SERVICE_DISCONNECTED ||
-            responseCode == BillingClient.BillingResponse.SERVICE_UNAVAILABLE ||
-            responseCode == BillingClient.BillingResponse.ERROR) {
-            Toast.makeText(context, R.string.error_donation_service, Toast.LENGTH_LONG).show()
-//        } else if (responseCode == BillingClient.BillingResponse.BILLING_UNAVAILABLE) {
-            // api version surely support this
-        } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
-//             do nothing when purchase is cancelled
-//        } else if (responseCode == BillingClient.BillingResponse.ITEM_ALREADY_OWNED) {
-            // this won't happen as we are consuming if item already owned
-//        } else if (responseCode == BillingClient.BillingResponse.ITEM_NOT_OWNED) {
-            // this won't happen as we are purchasing before consuming
-        } else {
-            Toast.makeText(context, getString(R.string.error_generic, responseCode.toString()), Toast.LENGTH_LONG).show()
-        }
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         val permissionsMap = HashMap<String, Int>()
         for ((index, permission) in permissions.withIndex()) {
@@ -275,27 +204,13 @@ class MainFragment : BaseFragment(),
     }
 
     private fun getNoRepeatRandomLoadingMessage(): String {
-        var loadingMessage = getRandomLoadingMessage()
+        var loadingMessage = LoadingMessageUtil.getRandomLoadingMessage(context!!)
 
         while (loadingMessage == mPreviousLoadingMessage) {
-            loadingMessage = getRandomLoadingMessage()
+            loadingMessage = LoadingMessageUtil.getRandomLoadingMessage(context!!)
         }
 
         mPreviousLoadingMessage = loadingMessage
-
-        return loadingMessage
-    }
-
-    private fun getRandomLoadingMessage(): String {
-        var loadingMessage = ""
-
-        when ((1..5).random()) {
-            1 -> loadingMessage = getString(R.string.loading_1)
-            2 -> loadingMessage = getString(R.string.loading_2)
-            3 -> loadingMessage = getString(R.string.loading_3)
-            4 -> loadingMessage = getString(R.string.loading_4)
-            5 -> loadingMessage = getString(R.string.loading_5)
-        }
 
         return loadingMessage
     }
