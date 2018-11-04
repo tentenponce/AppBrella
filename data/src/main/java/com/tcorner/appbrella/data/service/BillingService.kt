@@ -7,7 +7,9 @@ import com.android.billingclient.api.SkuDetails
 import com.android.billingclient.api.SkuDetailsParams
 import com.tcorner.appbrella.domain.common.exception.BillingConnectionException
 import io.reactivex.Completable
+import io.reactivex.CompletableEmitter
 import io.reactivex.Single
+import io.reactivex.SingleEmitter
 import javax.inject.Inject
 
 /**
@@ -23,39 +25,27 @@ class BillingService @Inject constructor(
      */
     fun getSkuList(): Single<List<SkuDetails>> {
         return Single.create {
-            mClient.startConnection(object : BillingClientStateListener {
-                override fun onBillingSetupFinished(@BillingClient.BillingResponse billingResponseCode: Int) {
-                    if (billingResponseCode == BillingClient.BillingResponse.OK) {
-                        val skuList = ArrayList<String>()
-
-                        skuList.add("donation_low")
-                        skuList.add("donation_med")
-                        skuList.add("donation_high")
-
-                        val params = SkuDetailsParams.newBuilder()
-                        params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
-                        mClient.querySkuDetailsAsync(params.build()) { responseCode, skuDetailsList ->
-                            if (responseCode == BillingClient.BillingResponse.OK && skuDetailsList != null) {
-                                if (!it.isDisposed) {
-                                    it.onSuccess(skuDetailsList)
-                                    mClient.endConnection()
-                                }
+            if (mClient.isReady) {
+                getAllDonations(it)
+            } else {
+                mClient.startConnection(object : BillingClientStateListener {
+                    override fun onBillingSetupFinished(@BillingClient.BillingResponse billingResponseCode: Int) {
+                        if (billingResponseCode == BillingClient.BillingResponse.OK) {
+                            getAllDonations(it)
+                        } else {
+                            if (!it.isDisposed) {
+                                it.onError(BillingConnectionException(billingResponseCode))
                             }
                         }
-                    } else {
+                    }
+
+                    override fun onBillingServiceDisconnected() {
                         if (!it.isDisposed) {
-                            it.onError(BillingConnectionException(billingResponseCode))
-                            mClient.endConnection()
+                            it.onError(NetworkErrorException())
                         }
                     }
-                }
-
-                override fun onBillingServiceDisconnected() {
-                    if (!it.isDisposed) {
-                        it.onError(NetworkErrorException())
-                    }
-                }
-            })
+                })
+            }
         }
     }
 
@@ -64,26 +54,57 @@ class BillingService @Inject constructor(
      */
     fun consumeInApp(purchaseToken: String): Completable {
         return Completable.create {
-            mClient.startConnection(object : BillingClientStateListener {
-                override fun onBillingSetupFinished(responseCode: Int) {
-                    mClient.consumeAsync(purchaseToken) { responseCode2, _ ->
-                        if (responseCode2 == BillingClient.BillingResponse.OK) {
-                            it.onComplete()
+            if (mClient.isReady) {
+                consumeInApp(purchaseToken, it)
+            } else {
+                mClient.startConnection(object : BillingClientStateListener {
+                    override fun onBillingSetupFinished(responseCode: Int) {
+                        if (responseCode == BillingClient.BillingResponse.OK) {
+                            consumeInApp(purchaseToken, it)
                         } else {
                             if (!it.isDisposed) {
-                                it.onError(BillingConnectionException(responseCode2))
-                                mClient.endConnection()
+                                it.onError(BillingConnectionException(responseCode))
                             }
                         }
                     }
-                }
 
-                override fun onBillingServiceDisconnected() {
-                    if (!it.isDisposed) {
-                        it.onError(NetworkErrorException())
+                    override fun onBillingServiceDisconnected() {
+                        if (!it.isDisposed) {
+                            it.onError(NetworkErrorException())
+                        }
                     }
+                })
+            }
+        }
+    }
+
+    private fun getAllDonations(emitter: SingleEmitter<List<SkuDetails>>) {
+        val skuList = ArrayList<String>()
+
+        skuList.add("donation_low")
+        skuList.add("donation_med")
+        skuList.add("donation_high")
+
+        val params = SkuDetailsParams.newBuilder()
+        params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
+        mClient.querySkuDetailsAsync(params.build()) { responseCode, skuDetailsList ->
+            if (responseCode == BillingClient.BillingResponse.OK && skuDetailsList != null) {
+                if (!emitter.isDisposed) {
+                    emitter.onSuccess(skuDetailsList)
                 }
-            })
+            }
+        }
+    }
+
+    private fun consumeInApp(purchaseToken: String, completableEmitter: CompletableEmitter) {
+        mClient.consumeAsync(purchaseToken) { responseCode2, _ ->
+            if (responseCode2 == BillingClient.BillingResponse.OK) {
+                completableEmitter.onComplete()
+            } else {
+                if (!completableEmitter.isDisposed) {
+                    completableEmitter.onError(BillingConnectionException(responseCode2))
+                }
+            }
         }
     }
 }

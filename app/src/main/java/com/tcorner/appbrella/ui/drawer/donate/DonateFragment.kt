@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,32 +76,33 @@ class DonateFragment : BaseFragment(),
 
         /* fast item adapter */
         mDonationAdapter.withOnClickListener { _, _, item, _ ->
-            loadingDialog.show()
+            if (mBillingClient.isReady) {
+                purchaseDonation(item.model)
+            } else {
+                loadingDialog.show()
 
-            mBillingClient.startConnection(object : BillingClientStateListener {
-                override fun onBillingServiceDisconnected() {
-                }
-
-                override fun onBillingSetupFinished(responseCode: Int) {
-                    loadingDialog.hide()
-
-                    if (responseCode == BillingClient.BillingResponse.OK) {
-                        mBillingClient.launchBillingFlow(
-                            activity, BillingFlowParams.newBuilder()
-                            .setSku(item.model.id)
-                            .setType(BillingClient.SkuType.INAPP)
-                            .build()
-                        )
-                    } else if (responseCode == BillingClient.BillingResponse.DEVELOPER_ERROR ||
-                        responseCode == BillingClient.BillingResponse.SERVICE_DISCONNECTED) {
-                        // either already connecting, or connection has ended. Don't show anything, just let the user click again
-                    } else if (responseCode == BillingClient.BillingResponse.BILLING_UNAVAILABLE) {
-                        Toast.makeText(context, R.string.error_donation_feature, Toast.LENGTH_LONG).show()
-                    } else {
-                        Toast.makeText(context, getString(R.string.error_generic, responseCode.toString()), Toast.LENGTH_LONG).show()
+                mBillingClient.startConnection(object : BillingClientStateListener {
+                    override fun onBillingServiceDisconnected() {
                     }
-                }
-            })
+
+                    override fun onBillingSetupFinished(responseCode: Int) {
+                        if (loadingDialog.isShowing) {
+                            loadingDialog.dismiss()
+                        }
+
+                        if (responseCode == BillingClient.BillingResponse.OK) {
+                            purchaseDonation(item.model)
+                        } else if (responseCode == BillingClient.BillingResponse.DEVELOPER_ERROR ||
+                            responseCode == BillingClient.BillingResponse.SERVICE_DISCONNECTED) {
+                            // either already connecting, or connection has ended. Don't show anything, just let the user click again
+                        } else if (responseCode == BillingClient.BillingResponse.BILLING_UNAVAILABLE) {
+                            Toast.makeText(context, R.string.error_donation_feature, Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(context, getString(R.string.error_generic, responseCode.toString()), Toast.LENGTH_LONG).show()
+                        }
+                    }
+                })
+            }
 
             true
         }
@@ -124,6 +124,7 @@ class DonateFragment : BaseFragment(),
     override fun onDestroy() {
         super.onDestroy()
         mPresenter.detachView()
+        mBillingClient.endConnection()
     }
 
     override fun showSwipeLoading() {
@@ -197,5 +198,13 @@ class DonateFragment : BaseFragment(),
         } else {
             Toast.makeText(context, getString(R.string.error_generic, responseCode.toString()), Toast.LENGTH_LONG).show()
         }
+    }
+
+    private fun purchaseDonation(donation: Donation) {
+        mBillingClient.launchBillingFlow(
+            activity, BillingFlowParams.newBuilder()
+            .setSku(donation.id)
+            .setType(BillingClient.SkuType.INAPP)
+            .build())
     }
 }
