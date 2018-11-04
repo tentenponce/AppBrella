@@ -1,4 +1,4 @@
-package com.tcorner.appbrella.ui.main
+package com.tcorner.appbrella.ui.drawer.main
 
 import com.tcorner.appbrella.domain.interactor.ConsumeDonation
 import com.tcorner.appbrella.domain.interactor.GetPrecipitationPercentage

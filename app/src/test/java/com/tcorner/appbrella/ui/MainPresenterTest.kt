@@ -2,8 +2,8 @@ package com.tcorner.appbrella.ui
 
 import com.tcorner.appbrella.base.PresenterTest
 import com.tcorner.appbrella.domain.interactor.GetPrecipitationPercentage
-import com.tcorner.appbrella.ui.main.MainMvpView
-import com.tcorner.appbrella.ui.main.MainPresenter
+import com.tcorner.appbrella.ui.drawer.main.MainMvpView
+import com.tcorner.appbrella.ui.drawer.main.MainPresenter
 import io.reactivex.Observable
 import org.junit.Before
 import org.junit.Test

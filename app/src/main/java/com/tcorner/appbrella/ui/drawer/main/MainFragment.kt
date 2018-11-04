@@ -1,42 +1,53 @@
-package com.tcorner.appbrella.ui.main
+package com.tcorner.appbrella.ui.drawer.main
 
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AlertDialog
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchasesUpdatedListener
 import com.tcorner.appbrella.R
 import com.tcorner.appbrella.domain.common.exception.LocationException
 import com.tcorner.appbrella.domain.model.PurchaseProduct
-import com.tcorner.appbrella.ui.base.BaseActivity
+import com.tcorner.appbrella.ui.base.BaseFragment
 import com.tcorner.appbrella.util.AnimateUtil
 import com.tcorner.appbrella.util.mapper.PurchaseMapper
 import com.tcorner.appbrella.util.random
-import kotlinx.android.synthetic.main.activity_main.const_main
-import kotlinx.android.synthetic.main.activity_main.iv_donate
-import kotlinx.android.synthetic.main.activity_main.iv_umbrella_off
-import kotlinx.android.synthetic.main.activity_main.iv_umbrella_on
-import kotlinx.android.synthetic.main.activity_main.tv_message
-import kotlinx.android.synthetic.main.activity_main.tv_sub_message
+import kotlinx.android.synthetic.main.fragment_main.const_main
+import kotlinx.android.synthetic.main.fragment_main.iv_donate
+import kotlinx.android.synthetic.main.fragment_main.iv_umbrella_off
+import kotlinx.android.synthetic.main.fragment_main.iv_umbrella_on
+import kotlinx.android.synthetic.main.fragment_main.tv_message
+import kotlinx.android.synthetic.main.fragment_main.tv_sub_message
 import org.jsoup.HttpStatusException
 import javax.inject.Inject
 
-class MainActivity : BaseActivity(),
-    MainMvpView,
-    PurchasesUpdatedListener {
+class MainFragment : BaseFragment(),
+    MainMvpView {
     companion object {
+
+        fun newInstance(): MainFragment {
+            val fragment = MainFragment()
+
+            val bundle = Bundle()
+            fragment.arguments = bundle
+
+            return fragment
+        }
 
         private const val REQUEST_PERMISSION = 1
 
         private const val LOADING_TEXT_SWITCH_TIMER = 1500L
 
         private const val LOADING_IMAGE_TIMER = 700L
+
         private val PERMISSIONS = arrayOf(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -57,16 +68,73 @@ class MainActivity : BaseActivity(),
     private lateinit var mLoadingTextRunnable: Runnable // handle loading text animation loop
 
     private lateinit var mLoadingImageRunnable: Runnable // handle loading text animation loop
+
     private var mIsOpen: Boolean = false // for animation
     private var mPreviousLoadingMessage: String = ""
+
+    override fun title(): String {
+        return getString(R.string.app_name)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        activityComponent()?.inject(this)
+
+        component().inject(this)
         mPresenter.attachView(this)
 
-        init()
-        initViews()
+        mLoadingTextRunnable = Runnable {
+            tv_message.text = getNoRepeatRandomLoadingMessage()
+
+            if (mIsLoading) {
+                mLoadingHandler.postDelayed(mLoadingTextRunnable, LOADING_TEXT_SWITCH_TIMER)
+            }
+        }
+
+        mLoadingImageRunnable = Runnable {
+            mIsOpen = !mIsOpen
+            AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, mIsOpen)
+
+            if (mIsLoading) {
+                mLoadingHandler.postDelayed(mLoadingImageRunnable, LOADING_IMAGE_TIMER)
+            }
+        }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_main, container, false)
+        setHasOptionsMenu(true)
+
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        const_main.setOnClickListener {
+            mPresenter.getPrecipitation()
+        }
+
+        iv_donate.setOnClickListener {
+            mBillingClient.startConnection(object : BillingClientStateListener {
+
+                override fun onBillingServiceDisconnected() {
+                }
+
+                override fun onBillingSetupFinished(responseCode: Int) {
+                    mBillingClient.launchBillingFlow(
+                        activity, BillingFlowParams.newBuilder()
+                        .setSku("donation_low")
+                        .setType(BillingClient.SkuType.INAPP)
+                        .build()
+                    )
+                }
+            })
+        }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
         mPresenter.getPrecipitation()
     }
 
@@ -138,14 +206,14 @@ class MainActivity : BaseActivity(),
 
     override fun errorPurchase(e: Throwable) {
         Toast.makeText(
-            this,
+            context,
             String.format(getString(R.string.error_donation), e.javaClass.simpleName),
             Toast.LENGTH_LONG
         ).show()
     }
 
     override fun successPurchase(purchaseProducts: List<PurchaseProduct>) {
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(context!!)
             .setTitle(R.string.success)
             .setMessage(R.string.success_donation)
             .setPositiveButton(R.string.welcome) { dialog, _ -> dialog.dismiss() }
@@ -156,15 +224,15 @@ class MainActivity : BaseActivity(),
     /**
      * Consume the purchased item/s immediately
      */
-    override fun onPurchasesUpdated(responseCode: Int, purchases: MutableList<Purchase>?) {
+    fun onPurchasesUpdated(responseCode: Int, purchases: MutableList<Purchase>?) {
         if (responseCode == BillingClient.BillingResponse.OK && purchases != null) {
             mPresenter.consumePurchases(PurchaseMapper.toPurchaseProducts(purchases))
         } else if (responseCode == BillingClient.BillingResponse.FEATURE_NOT_SUPPORTED) {
-            Toast.makeText(this, R.string.error_donation_feature, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, R.string.error_donation_feature, Toast.LENGTH_LONG).show()
         } else if (responseCode == BillingClient.BillingResponse.SERVICE_DISCONNECTED ||
             responseCode == BillingClient.BillingResponse.SERVICE_UNAVAILABLE ||
             responseCode == BillingClient.BillingResponse.ERROR) {
-            Toast.makeText(this, R.string.error_donation_service, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, R.string.error_donation_service, Toast.LENGTH_LONG).show()
 //        } else if (responseCode == BillingClient.BillingResponse.BILLING_UNAVAILABLE) {
             // api version surely support this
         } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
@@ -174,7 +242,7 @@ class MainActivity : BaseActivity(),
 //        } else if (responseCode == BillingClient.BillingResponse.ITEM_NOT_OWNED) {
             // this won't happen as we are purchasing before consuming
         } else {
-            Toast.makeText(this, getString(R.string.error_generic, responseCode.toString()), Toast.LENGTH_LONG).show()
+            Toast.makeText(context, getString(R.string.error_generic, responseCode.toString()), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -185,55 +253,16 @@ class MainActivity : BaseActivity(),
         }
 
         if (hasPermissions()) {
-            recreate()
-        }
-    }
-
-    private fun init() {
-        mLoadingTextRunnable = Runnable {
-            tv_message.text = getNoRepeatRandomLoadingMessage()
-
-            if (mIsLoading) {
-                mLoadingHandler.postDelayed(mLoadingTextRunnable, LOADING_TEXT_SWITCH_TIMER)
+            if (activity != null &&
+                activity is MainInterface) {
+                (activity as MainInterface).recreateMainFragment()
             }
-        }
-
-        mLoadingImageRunnable = Runnable {
-            mIsOpen = !mIsOpen
-            AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, mIsOpen)
-
-            if (mIsLoading) {
-                mLoadingHandler.postDelayed(mLoadingImageRunnable, LOADING_IMAGE_TIMER)
-            }
-        }
-    }
-
-    private fun initViews() {
-        const_main.setOnClickListener {
-            mPresenter.getPrecipitation()
-        }
-
-        iv_donate.setOnClickListener {
-            mBillingClient.startConnection(object : BillingClientStateListener {
-
-                override fun onBillingServiceDisconnected() {
-                }
-
-                override fun onBillingSetupFinished(responseCode: Int) {
-                    mBillingClient.launchBillingFlow(
-                        this@MainActivity, BillingFlowParams.newBuilder()
-                        .setSku("donation_low")
-                        .setType(BillingClient.SkuType.INAPP)
-                        .build()
-                    )
-                }
-            })
         }
     }
 
     private fun hasPermissions(): Boolean {
         for (permission in PERMISSIONS) {
-            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(context!!, permission) != PackageManager.PERMISSION_GRANTED) {
                 return false
             }
         }
@@ -242,7 +271,7 @@ class MainActivity : BaseActivity(),
     }
 
     private fun requestPermission() {
-        ActivityCompat.requestPermissions(this, PERMISSIONS, REQUEST_PERMISSION)
+        ActivityCompat.requestPermissions(activity!!, PERMISSIONS, REQUEST_PERMISSION)
     }
 
     private fun getNoRepeatRandomLoadingMessage(): String {
