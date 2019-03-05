@@ -77,16 +77,16 @@ class DrawerActivity : BaseActivity(),
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        return when (item.itemId) {
             android.R.id.home -> {
                 if (drawer_layout.isDrawerOpen(GravityCompat.START)) { //toggle drawer open close
                     drawer_layout.closeDrawer(GravityCompat.START)
                 } else {
                     drawer_layout.openDrawer(GravityCompat.START)
                 }
-                return true
+                true
             }
-            else -> return super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
