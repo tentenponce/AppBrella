@@ -1,29 +1,25 @@
-package com.tcorner.appbrella.ui.drawer
+package com.tcorner.appbrella.service.reboot
 
+import android.util.Log
 import com.tcorner.appbrella.domain.interactor.GetNotificationStatus
 import com.tcorner.appbrella.ui.base.BasePresenter
 import io.reactivex.rxkotlin.subscribeBy
 import javax.inject.Inject
 
-/**
- *
- * Created by Exequiel Egbert V. Ponce on 11/4/2018.
- */
+class RebootPresenter
+@Inject constructor(private val mGetNotificationStatus: GetNotificationStatus) :
+    BasePresenter<RebootMvpView>() {
 
-class DrawerPresenter
-@Inject constructor(private val mGetNotificationStatus: GetNotificationStatus) : BasePresenter<DrawerMvpView>() {
-
-    fun setAlarmNotification() {
+    fun getNotificationStatus() {
+        checkViewAttached()
         mGetNotificationStatus.execute()
             .doOnSubscribe { compositeDisposable.add(it) }
             .subscribeBy(onSuccess = {
                 if (it) {
                     mvpView?.startAlarm()
-                } else {
-                    mvpView?.stopAlarm()
                 }
             }, onError = {
-                mvpView?.showError(it)
+                Log.e("androidruntime", "AppBrella: problem starting alarm ${it::class.java.simpleName}")
             })
     }
 }

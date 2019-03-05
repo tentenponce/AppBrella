@@ -11,6 +11,8 @@ import com.tcorner.appbrella.domain.common.executor.ThreadExecutor
 import com.tcorner.appbrella.domain.repository.DeviceRepository
 import com.tcorner.appbrella.domain.repository.LocationRepository
 import com.tcorner.appbrella.domain.repository.WeatherRepository
+import com.tcorner.appbrella.service.notification.NotificationService
+import com.tcorner.appbrella.service.reboot.RebootService
 import dagger.Component
 import javax.inject.Singleton
 
@@ -42,4 +44,8 @@ interface AppComponent {
     fun locationRepository(): LocationRepository
 
     fun weatherRepository(): WeatherRepository
+
+    fun inject(notificationService: NotificationService)
+
+    fun inject(notificationService: RebootService)
 }

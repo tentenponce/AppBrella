@@ -12,6 +12,7 @@ import com.tcorner.appbrella.domain.common.exception.LocationException
 import com.tcorner.appbrella.ui.base.BaseFragment
 import com.tcorner.appbrella.util.AnimateUtil
 import com.tcorner.appbrella.util.LoadingMessageUtil
+import com.tcorner.appbrella.util.helper.PrecipitationHelper
 import kotlinx.android.synthetic.main.fragment_main.const_main
 import kotlinx.android.synthetic.main.fragment_main.iv_umbrella_off
 import kotlinx.android.synthetic.main.fragment_main.iv_umbrella_on
@@ -143,27 +144,16 @@ class MainFragment : BaseFragment(),
     }
 
     override fun showPrecipitation(precipitation: Int?) {
-        when (precipitation) {
-            in 0..15 -> {
-                tv_message.setText(R.string.no_chance_rain)
-                AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, false)
-                mIsOpen = false
-            }
-            in 16..35 -> {
-                tv_message.setText(R.string.low_chance_rain)
-                AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, false)
-                mIsOpen = false
-            }
-            in 36..70 -> {
-                tv_message.setText(R.string.medium_chance_rain)
-                AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, true)
-                mIsOpen = true
-            }
-            in 70..100 -> {
-                tv_message.setText(R.string.high_chance_rain)
-                AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, true)
-                mIsOpen = true
-            }
+        tv_message.text = PrecipitationHelper.getPrecipitationMessage(context!!, precipitation ?: 0)
+
+        if (precipitation in 0..35) {
+            AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, false)
+            mIsOpen = false
+        }
+
+        if (precipitation in 36..100) {
+            AnimateUtil.animateFadeInFadeOut(iv_umbrella_on, iv_umbrella_off, true)
+            mIsOpen = true
         }
 
         tv_sub_message.text = String.format(getString(R.string.rain_chance), precipitation.toString())

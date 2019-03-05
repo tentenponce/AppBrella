@@ -3,6 +3,7 @@ package com.tcorner.appbrella.util.factory
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
+import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.tcorner.appbrella.R
@@ -31,5 +32,13 @@ object DialogFactory {
         dialog.setContentView(layoutLoading)
 
         return dialog
+    }
+
+    fun createSimpleOkErrorDialog(context: Context, title: String, message: String): Dialog {
+        val alertDialog = AlertDialog.Builder(context)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(R.string.okay, null)
+        return alertDialog.create()
     }
 }
