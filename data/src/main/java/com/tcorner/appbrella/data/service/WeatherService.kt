@@ -9,7 +9,7 @@ class WeatherService @Inject constructor() {
 
     fun getPrecipitation(longitude: Double, latitude: Double): Single<Int> =
         Single.fromCallable {
-            val url = "https://weather.com/weather/today/l/${latitude},${longitude}"
+            val url = "https://weather.com/weather/today/l/$latitude,$longitude"
 
             val document = Jsoup.connect(url).get()
 
