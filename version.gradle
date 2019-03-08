@@ -1,5 +1,5 @@
 ext.versioning = [
         majorVersion: 0,
-        minorVersion: 4,
+        minorVersion: 5,
         patchVersion: 0
 ]
