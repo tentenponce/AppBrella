@@ -12,6 +12,9 @@ import com.tcorner.appbrella.R
 import com.tcorner.appbrella.ui.base.BaseActivity
 import com.tcorner.appbrella.ui.drawer.donate.DonateFragment
 import com.tcorner.appbrella.ui.drawer.main.MainFragment
+import com.tcorner.appbrella.ui.drawer.settings.SettingsFragment
+import com.tcorner.appbrella.util.factory.DialogFactory
+import com.tcorner.appbrella.util.helper.AlarmHelper
 import com.tcorner.appbrella.util.helper.FragmentHelper
 import kotlinx.android.synthetic.main.activity_drawer.content_frame
 import kotlinx.android.synthetic.main.activity_drawer.drawer_layout
@@ -39,15 +42,19 @@ class DrawerActivity : BaseActivity(),
     @Inject
     lateinit var mPresenter: DrawerPresenter
 
+    private lateinit var mAlarmHelper: AlarmHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drawer)
         activityComponent()?.inject(this)
         mPresenter.attachView(this)
 
+        init()
         initViews()
         onNavigationItemSelected(nav_view.menu.getItem(MAIN))
         nav_view.menu.getItem(MAIN).isChecked = true
+        mPresenter.setAlarmNotification()
     }
 
     override fun onDestroy() {
@@ -71,6 +78,10 @@ class DrawerActivity : BaseActivity(),
                 DonateFragment.newInstance(),
                 content_frame,
                 getString(R.string.menu_donate))
+            R.id.nav_settings -> FragmentHelper.setupFragment(this,
+                SettingsFragment.newInstance(),
+                content_frame,
+                getString(R.string.menu_settings))
         }
 
         return true
@@ -102,6 +113,25 @@ class DrawerActivity : BaseActivity(),
             /* but we still pass it to the fragment that is responsible for launching the google in-app billing :P */
             fragment.onPurchasesUpdated(responseCode, purchases)
         }
+    }
+
+    override fun showError(error: Throwable) {
+        DialogFactory.createSimpleOkErrorDialog(this,
+            getString(R.string.error_generic_title),
+            String.format(getString(R.string.error_notification_message), error::class.java.simpleName))
+            .show()
+    }
+
+    override fun startAlarm() {
+        mAlarmHelper.start()
+    }
+
+    override fun stopAlarm() {
+        mAlarmHelper.cancel()
+    }
+
+    private fun init() {
+        mAlarmHelper = AlarmHelper(this)
     }
 
     private fun initViews() {

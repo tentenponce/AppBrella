@@ -4,7 +4,7 @@ import com.tcorner.appbrella.base.PresenterTest
 import com.tcorner.appbrella.domain.interactor.GetPrecipitationPercentage
 import com.tcorner.appbrella.ui.drawer.main.MainMvpView
 import com.tcorner.appbrella.ui.drawer.main.MainPresenter
-import io.reactivex.Observable
+import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
 import org.mockito.BDDMockito.given
@@ -30,7 +30,7 @@ class MainPresenterTest : PresenterTest() {
 
     @Test
     fun `Should show precipitation percentage`() {
-        given(mGetPrecipitationPercentage.execute()).willReturn(Observable.just(10))
+        given(mGetPrecipitationPercentage.execute()).willReturn(Single.just(10))
 
         mPresenter.getPrecipitation()
 

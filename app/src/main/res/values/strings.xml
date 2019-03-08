@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">Appbrella</string>
 
+    <string name="app_settings" translatable="false">Settings</string>
+
     <!-- generic messages -->
     <string name="rain_chance" translatable="false">Rain Chance: %s%%</string>
     <string name="touch_to_refresh" translatable="false">Touch Anywhere to Refresh</string>
@@ -19,10 +21,6 @@
     <string name="error_generic_title" translatable="false">Oops.</string>
     <string name="error_network" translatable="false">We\'ve encountered fogs upon reaching the status of clouds.</string>
     <string name="error_generic" translatable="false">We\'ve crashed on to airplane upon checking the clouds: %s</string>
-    <string name="error_donation" translatable="false">Sorry, we\'ve encountered problem upon donating to the clouds: %s</string>
-    <string name="error_donation_feature" translatable="false">Uh Oh, we\re still working on to support donation on your device.</string>
-    <string name="error_donation_service" translatable="false">Uh Oh, we\'ve encountered some thunderstorms, just try it again.</string>
-    <string name="error_get_donation" translatable="false">Uh Oh, our umbrellas has been destroyed by a storm. Please try again. Error: %s</string>
 
     <!-- loading messages -->
     <string name="loading_1" translatable="false">Checking clouds…</string>
@@ -33,13 +31,26 @@
 
     <!-- drawer messages -->
     <string name="menu_main" translatable="false">AppBrella</string>
+    <string name="menu_settings" translatable="false">Settings</string>
     <string name="menu_donate" translatable="false">Support</string>
 
     <!-- donate messages -->
     <string name="donate_title" translatable="false">Buy me an Umbrella</string>
     <string name="donate_message" translatable="false">Any size of umbrella will be appreciated!</string>
 
+    <string name="error_donation" translatable="false">Sorry, we\'ve encountered problem upon donating to the clouds: %s</string>
+    <string name="error_donation_feature" translatable="false">Uh Oh, we\re still working on to support donation on your device.</string>
+    <string name="error_donation_service" translatable="false">Uh Oh, we\'ve encountered some thunderstorms, just try it again.</string>
+    <string name="error_get_donation" translatable="false">Uh Oh, our umbrellas has been destroyed by a storm. Please try again. Error: %s</string>
+
+
     <!--response messages-->
     <string name="welcome" translatable="false">Welcome</string>
     <string name="okay" translatable="false">Okay</string>
+
+    <!-- settings -->
+    <string name="settings_notification_status_title" translatable="false">Daily Notification</string>
+    <string name="settings_notification_status_message" translatable="false">Be in touch whether you should bring your umbrella.</string>
+
+    <string name="error_notification_message" translatable="false">Uh Oh, can you please try again? %s</string>
 </resources>

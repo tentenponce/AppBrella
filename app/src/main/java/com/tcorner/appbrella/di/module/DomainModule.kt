@@ -1,6 +1,7 @@
 package com.tcorner.appbrella.di.module
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.tcorner.appbrella.data.common.executor.JobExecutor
 import com.tcorner.appbrella.data.impl.DeviceRepositoryImpl
 import com.tcorner.appbrella.data.impl.LocationRepositoryImpl
@@ -42,8 +43,8 @@ class DomainModule {
     /* Repository */
     @Provides
     @Singleton
-    internal fun deviceRepository(@AppContext context: Context): DeviceRepository {
-        return DeviceRepositoryImpl(context)
+    internal fun deviceRepository(@AppContext context: Context, sharedPreferences: SharedPreferences): DeviceRepository {
+        return DeviceRepositoryImpl(context, sharedPreferences)
     }
 
     @Provides
