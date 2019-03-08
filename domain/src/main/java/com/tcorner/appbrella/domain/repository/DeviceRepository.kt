@@ -6,5 +6,7 @@ package com.tcorner.appbrella.domain.repository
  */
 interface DeviceRepository {
 
+    var notificationStatus: Boolean
+
     fun getDeviceId(): String
 }
